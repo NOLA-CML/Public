@@ -50,8 +50,8 @@ foreach ($Printer in $Printers){
 	if($filterToNetworksWithGateway){Write-Host "Networks: $filterToNetworksWithGateway"}
 	$filterToHostnames = Ninja-Property-Docs-Get "Printers" "$printerName" "filterToHostnames"
 	if($filterToHostnames){Write-Host "Hostnames: $filterToHostnames"}
-	#duplex mode is exporting as a GUID, need to convert to option name.
-  	$duplexMode = Ninja-Property-Docs-Get "Printers" "$printerName" "duplexMode"
+	$duplexMode = Ninja-Property-Docs-Get "Printers" "$printerName" "duplexMode"
+
 	Write-Host "Duplex setting: $duplexMode"
 	$color = Ninja-Property-Docs-Get "Printers" "$printerName" "color"
 	Write-Host "Color setting: $color"
@@ -251,8 +251,10 @@ foreach ($Printer in $Printers){
 	}
 	
 	#Set printer defaults
-	if ($color = 1) {
-		
+	switch ($duplexMode) {
+		c9f09750-6b84-4a5b-b0b1-7ef9d6187bd1 {$duplexMode = "OneSided"}
+		316e6a9a-22da-4d36-bf2b-858b911c5c45 {$duplexMode = "TwoSidedLongEdge"}
+		79d617c5-d809-4ad6-b29d-2509afe8f297 {$duplexMode = "TwoSidedShortEdge"}
 	}
 	Set-PrintConfiguration $printerName -DuplexingMode $duplexMode -Color $color -Collate $collate
 
