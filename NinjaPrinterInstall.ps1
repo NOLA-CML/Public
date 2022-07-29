@@ -51,7 +51,7 @@ foreach ($Printer in $Printers){
 	$filterToHostnames = Ninja-Property-Docs-Get "Printers" "$printerName" "filterToHostnames"
 	if($filterToHostnames){Write-Host "Hostnames: $filterToHostnames"}
 	#duplex mode is exporting as a GUID, need to convert to option name.
-  $duplexMode = Ninja-Property-Docs-Get "Printers" "$printerName" "duplexMode"
+  	$duplexMode = Ninja-Property-Docs-Get "Printers" "$printerName" "duplexMode"
 	Write-Host "Duplex setting: $duplexMode"
 	$color = Ninja-Property-Docs-Get "Printers" "$printerName" "color"
 	Write-Host "Color setting: $color"
