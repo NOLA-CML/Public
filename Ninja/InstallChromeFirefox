@@ -1,0 +1,37 @@
+#Set parameters
+$path = "$env:TEMP"
+
+Start-Transcript -Path "$path\chrome-firefox.log"
+
+$chromeurl = "http://dl.google.com/chrome/install/375.126/chrome_installer.exe"
+$firefoxurl = "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"
+$chrome = "$path\chrome.exe"
+$firefox = "$path\firefox.exe"
+
+#Download and install Chrome
+$software = "Chrome"
+$installed = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -like "*$software*" }) -ne $null
+
+If(-Not $installed) {
+	Write-Host "$software is NOT installed...installing";
+	Invoke-WebRequest -UseBasicParsing -Uri $chromeurl -OutFile $chrome
+  Start-Process -FilePath $chrome -ArgumentList "/silent /install"
+} else {
+	Throw "$software is already installed, skipping."
+}
+
+
+
+#Download and install Firefox
+$software = "Firefox"
+$installed = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -like "*$software*" }) -ne $null
+
+If(-Not $installed) {
+	Write-Host "$software is NOT installed...installing";
+  Invoke-WebRequest -UseBasicParsing -Uri $firefoxurl -OutFile $firefox
+  Start-Process -FilePath $firefox -ArgumentList "/S"
+} else {
+	Throw "$software is already installed, skipping."
+}
+
+Stop-Transcript
