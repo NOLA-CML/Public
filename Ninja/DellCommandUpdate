@@ -1,0 +1,157 @@
+#Set parameters
+$path = "$env:TEMP"
+
+Start-Transcript -Path "$path\dcu.log"
+
+Write-Host "Checking if machine is a Dell"
+$wmi = Get-WMIObject –class Win32_ComputerSystem
+if ($wmi.Manufacturer -notlike "Dell*"){
+  Throw "Computer is not a Dell, exiting"
+  exit
+}
+
+$software = "Dell Command"
+$installed = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -like "*$software*" }) -ne $null
+
+If(-Not $installed) {
+	Write-Host "$software is NOT installed...installing";
+} else {
+	Throw "$software is already installed."
+	exit
+}
+
+$dcu = "$path\dcu.exe"
+$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+$session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36 Edg/99.0.1150.55"
+$session.Cookies.Add((New-Object System.Net.Cookie("s_fid", "2E67A55E55267E6C-369BB03200147BA6", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_vi", "[CS]v1|3079CE37FB57CB59-400002F976AAED79[CE]", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_cls_v", "f9347497-bd36-4913-adf9-74d90fe133db", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("TLGUID", "60252422778630746363411469321965991870", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("DellCEMSession", "BF2537EA738F98A149A9D61A10F3A9F3", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("dell_canary", "live", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_cls_s", "f5ebbff7-bf73-4980-b67f-ceb39f922618:1", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("dais-aspNsId", "njjy4qfwp3pwicltprx0h2rw", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("bmgvid", "`"b2e6eeab-7dc8-4f7a-9a66-5bfa0f4c4506`"", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("AMCVS_4DD80861515CAB990A490D45%40AdobeOrg", "1", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("rumCki", "false", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("cidlid", "%3A%3A", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_cc", "true", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("ASP.NET_SessionId", "duvxpvuy1o3z20c3j0gwyg11", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("learntaxonomy", "prevBreadCrumbPathWithNodeID=premier#TOPT:NAV_TOPT_premier#d2829a4d-210a-4541-bc93-17007b32aa13|premier-help#TOPT:NAV_TOPT_premier-help#d42a5170-8fca-488d-8e20-a935ed120443", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("dus", "ci=premier-help-equotes", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("StormSCookie", "js=1", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("StormPCookie", "js=1", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("inputArticleNo", "000144108", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("check", "true", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_dnb", "undefined%7Cundefined%7Cundefined%7Cundefined%7Cundefined%7Cundefined%3Aundefined%7Cundefined%7Cundefined%7Cundefined%7Cundefined", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("location", "{%22zipcode%22:%20%2270458%22%2C%20%22source%22:%20%22geo%22%2C%20%22country%22:%20%22us%22}", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("BVImplnoquestions", "17580_10_0", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("LithiumCookiesAccepted", "0", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("ask-question-widget", "1", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("dc-auth", "wmn22o2cHHgs7cCeIuOYEkyMTdkYTnjAAOjAwugs7xh2laDXCE9uu9OkONFCOM0s", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("search-visitorId", "4e2f0318-293c-4494-b961-29763759076a", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("BRAND_MESSENGER_activatingRuleId", "b300871f-039f-4b5b-b32f-670c210b202a", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("BRAND_MESSENGER_companyKey", "dell", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("eSupId", "SID=e07d5630-a5be-466b-bbb4-01202cb3db51&ld=20220721", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("v36", "startech", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_vnum", "1670610747554%26vn%3D2", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("lwp", "c=us&l=en&s=bsd&cs=04", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("dais-a", "3f1urW47-ekpldFB6i8P6qr3xJDJQ79j6tt1acGou1b-RWo4glbbvdXnp-_8y2iaOm2LycIymHWGuJd-4xzViAmuHzc1", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("di_track", "dcbaf3cd24a34e78b0ca01f72705ab5e", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("dais-c", "M21x8cogIQZThCVKtiuIBClJ/vSM/g96MuMz3JOl5aTmD4WBddkNaE1gsvZ+zLHNTne8XlB/H/yF0IBWxYM8fJuCylnrVzYP0FSP/nRyAAJsdrYbD0s4wBvPujnvjhZnWgy00Me1R6HqA7H1V757NY6/K3ES+72jVqEYO8XXJL7POlP16MxMoy2ct7Pr95XVS/ehvdMhuOB0WQn0Nv2XZg==", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("__privaci_cookie_consent_generated", "8f98c2d4-3f43-4eaa-a19f-7daf247b9406:25", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("OLRProduct", "OLRProduct=D7MG0F2|", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("mbox", "PC#d0ecbda1ec214049a251ad92f80860c0.34_0#1695134210|session#87246b3e682f4cd18f0c651da85b4919#1648576814", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_channelstack", "%5B%5B%27Direct%2520Load%27%2C%271648574953783%27%5D%5D", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("sessionTime", "2022%2C2%2C29%2C12%2C29%2C13%2C785", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_hwp", "uscorp1%7C%7Cnull%7C%7C29%3A3%3A2022%3A12%3A29%7C%7CN%7C%7CN%7C%7Cnull%7C%7C0%7C%7Cnull%7C%7Cnull%7C%7CN%7C%7Cnull%7C%7Cnull%7C%7Cnull", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("invoca_session", "%7B%22ttl%22%3A%222022-04-28T17%3A29%3A23.424Z%22%2C%22session%22%3A%7B%22utm_medium%22%3A%22direct%22%2C%22utm_source%22%3A%22direct%22%2C%22dgc%22%3A%22Direct%20Load%22%2C%22invoca_id%22%3A%22i-4b57dc17-0ee3-421c-f12d-6d90449a4f2a%22%7D%2C%22config%22%3A%7B%22ce%22%3Atrue%2C%22fv%22%3Afalse%2C%22ba%22%3Atrue%7D%7D", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("AKA_A2", "A", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("bm_sz", "5E9ADF656B4592555924DAD9698DCEDB~YAAQxyABF8XApeJ/AQAA4e+Y5g//QVzD6pK+q2h/RDTg1EbBnvmJ9JeLbHGdI0zDsGokdcVK96gBO1+ZbBWzIskZpXl+Mb/HWQ6lS+narQbSUZBlcv6fHPW51w2lutkonPyqSYjq5MuBaxrGoPVwNGuTQpu89ob2LXU6TU6w8x9RjgK5UIQ008zX3w2M+0Y2U4f8QAVi1Y5MyA4f5GFedNWbFVCvauIoKOAvXtKB+Pm2yuaqpasZNrta9Qq/vXP3bR6CpNQ9CEbOzAIXR8PtWO0teprNlmOY8C3Kx9SLiAxs~4407878~4404790", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("AMCV_4DD80861515CAB990A490D45%40AdobeOrg", "1585540135%7CMCAID%7C3079CE37FB57CB59-400002F976AAED79%7CMCIDTS%7C19084%7CMCMID%7C60252422778630746363411469321965991870%7CMCOPTOUT-1631721372s%7CNONE%7CvVersion%7C4.4.0", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_vnc365", "1680377258602%26vn%3D59", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_ivc", "true", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("__privaci_cookie_no_action", "no-action-consent", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("VOCAAS_STICKY_SESSION", "F48B2F1C1C7379F1682D8C09AC4E5221", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("VOCAAS_SESSION_ID", "485E628678A8EEBF21B563347F340D2C", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("bm_mi", "9AD0C073AD9808F8D41A780A66295770~V+YIc+9SimK0QxCnZqbUUBZeC+LcSAvRJw81njo/hVRb4AYZizzyUGdNKeCr+WJ/facF/nEE1AXHA/LjlXyyZ+8w071S1arNPyOQOh7/mAN13LtrZTqM2qZUFIHsJwSpPoyQlYN1RYh7VWVcqEKdCwA1RrY09my1Xt//R0lv+fl62Wrcql+VgRZ0R+hy67k1v73ASYFRaIq92cytCiprK/9N6A5vlDQ2SAOC5aVHjRUAgCdxpWCvI5JujfwN+99IHU2i42LT3KFr5y0ARQU5ay73b5wR30aI/syBHTKzjzm/H7oWFoICDL6cRuRbf5tA", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_c49", "c%3Dus%26l%3Den%26s%3Dbsd%26cs%3D04%26servicetag%3Dd7mg0f2", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("gpv_pn", "us%7Cen%7C04%7Cbsd%7Ckbdoc%7Cindex", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_depth", "2", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("LiSESSIONID", "540820A2AF28C95BBF961EF96891C4FB", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("VISITOR_BEACON", "~2DumqX7e0dw8FmLR5~yeygv9uHSewhlkmlbBne9vBNgruv47fbZ54wfGoo77yms1PIIYzDzfT2cB3B6tbIZ6fOUwyDIt9_zlOBd4b8Lw..", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("AWSALB", "NZZ3gPNevhc9AosEwpAuqcgo+nVOt6sEXXw6WNPyc71cGcUW3n726kWCg6Hb9UQ+kI1Ke4cq/cQS61rd/Z3xRqR1DcUOVa0p5Vqis12R9AUip9pqolLfujuc2JVN", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("AWSALBCORS", "NZZ3gPNevhc9AosEwpAuqcgo+nVOt6sEXXw6WNPyc71cGcUW3n726kWCg6Hb9UQ+kI1Ke4cq/cQS61rd/Z3xRqR1DcUOVa0p5Vqis12R9AUip9pqolLfujuc2JVN", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("LithiumVisitor", "~2HnEnOYmEvPtMparV~X36T0ZPzOU3XuU5GZa7a5Jozuykc_uNKYoXz-c0a8HywXG69kDyVddM52meJDj2bRwkj3CoVgp0G9-t_-53WMQ..", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("bm_sv", "7A5BC06DA056D0EB8849149022464FD2~+ZJDvPU+hOaz85PHYl1KpMQbayBnbv3bj7KXoL8a1PXHaiO3ZvzfUdxU/JRyRJrZOYX5yX83sT4J3lTKJ2r0Ob01Rh++EYoLOyuOAdm0GHMNCmHDCZ48YKeePgaFITo94s9jDoQbxSSNmd9XSWqSdRpIztLY50OUnr3rHhhKnt4=", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("BRAND_MESSENGER_pageVisitsSinceLastMessage", "%5B%7B%22url%22%3A%22https%3A%2F%2Fwww.dell.com%2Fcommunity%2FInspiron-Desktops%2Fcomputer-does-not-turn-on-Blinking-power-button-light-5-white%2Ftd-p%2F7771750%22%2C%22title%22%3A%22computer%20does%20not%20turn%20on.%20Blinking%20power%20button%20light.%205%20white%20...%22%2C%22timestamp%22%3A1642792418218%7D%2C%7B%22url%22%3A%22https%3A%2F%2Fwww.dell.com%2Fcommunity%2FPowerEdge-Hardware-General%2FChecking-multiple-service-tags%2Ftd-p%2F3854087%22%2C%22title%22%3A%22Solved%3A%20Checking%20multiple%20service%20tags%20-%20Dell%20Community%22%2C%22timestamp%22%3A1647373952061%7D%2C%7B%22url%22%3A%22https%3A%2F%2Fwww.dell.com%2Fcommunity%2FPowerEdge-Hardware-General%2FPowershell-command-invoke-webrequest-doesnt-work-with-idrac8-but%2Fm-p%2F8...%22%2C%22title%22%3A%22Solved%3A%20Powershell%20command%20invoke-webrequest%20doesnt%20work%20with%20id...%22%2C%22timestamp%22%3A1648842117934%7D%5D", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("BRAND_MESSENGER_mahUserId", "", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("BRAND_MESSENGER_mahToken", "", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("ak_bmsc", "35055AA21D222EB8905DAF77CB108214~000000000000000000000000000000~YAAQxyABF8n1rOJ/AQAA9ia25g/zL5/FZGAMWweAixV1OtkJJuKTh1N1D1JsquoujkYX7OY9x4jfmZpDqLf9CHj9hIe5A/7tLl/KFPKzsNsFvT0SDvonrNSURVQNdZ/+VcQGjU2lJdccN/SgTmGknahU8U3NGbLNXrWHWMtxbtOSXGNs5g6IWk4uMpZKZI5A5o1cturoPhbaRuNnE/B1KVAYx7bh9F+xp6/sYolp7Gi0OyRFdVv15UN9r95Ek/IFf0SSvV4M012TD9l9w2CIiSE0YWHYR3i/Z75xC3xSTf3+HTZJN6TTdcP5UjJeSVjLgyF87vTtSyU0avQHB0semotjdv5MVWFx354QvUQiQMx/0p9aKT3/Fb/zny3d52/k/Ng758mvDbDc69Ey0bSOhKcAzSWB/I64W5EoNlkL2t7Ssy33L5P2gwATyM8CWgbL7NNataYgLB0jsIq1Rs3Zc5AVPu5+AnaYxlhcA90vB/H6pH6TzHTSc0fJo4RUsJubA7dRRHGD6Y0b3zrCaj9E9MqdKVCEYkeknmns97b364kJqDRubps2odjs16OOTyGce8qEC7hr5Lc21EPXsYNzXA==", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_sq", "%5B%5BB%5D%5D", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("akavpau_maintenance_vp", "1648843485~id=68a8fffe755f12ea70e6b2eb02fdf200", "/", "www.dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_abck", "DF590F6DEBCCC3E5D1732EBAE24D65AD~0~YAAQxyABFxMFreJ/AQAACV625gfC1+OUZAAhtfbqWPodwsCpe+N8XFeo87L4GDIRBirynrQVBAzcb7XzpqZfq71+xE89TPP+m5EtdhDUPWbyJ5+9WOtz34YnwFpINJDVogb3YbFYY1z6tDg32yLVi9HRoqK3u6rXVT9RlUMPP1ULD0i/kUqZ/kAMgIIvqzyBVidAtFyunkrjLEavROr5EyhWvOJ02aZL5GnQeA6QFBt5cZq+REW5BUf0HAG7GoxF0ihx9BG9fjWEanKDCiUukrPwS6Sieu+6F2WJyFKjO2vzhJTlS4izgqtg6D+GMG4KroweGRN5O5F4pkw4wKPFF+VgoKUETyMVAUnF/L8y8NRkgYNovWaxSxF1Ku3LDnK7BURaOUj5TWYEmfTfXC15QwcP+rQGwLA=~-1~-1~-1", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_ips", "1659", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_tp", "2896", "/", ".dell.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("s_ppv", "us%257Cen%257Cbsd%257C04%257Cesupport-home%257Cdriversdetails%257Cindex%2C57%2C57%2C1659%2C1%2C2", "/", ".dell.com")))
+
+Write-Host "Connecting to Dell"
+
+#Download Office Deployment tool
+$url = "https://www.dell.com/support/kbdoc/en-us/000177325/dell-command-update"
+try {
+    $response = Invoke-WebRequest -UseBasicParsing -Uri $url -ErrorAction SilentlyContinue
+} catch {
+    Throw "Failed to connect: $url with error $_."
+    exit
+}
+$url = $response.links | Where-Object {$_.outerHTML -like "*Universal Windows Platform*"} | Select-Object -First 1
+try {
+	$response = Invoke-WebRequest -UseBasicParsing -Uri $url.href -ErrorAction SilentlyContinue -WebSession $session -Headers @{
+		"method"="GET"
+		"authority"="www.dell.com"
+		"scheme"="https"
+		"path"="/support/home/en-us/drivers/DriversDetails?driverId=601KT"
+		"cache-control"="max-age=0"
+		"sec-ch-ua"="`" Not A;Brand`";v=`"99`", `"Chromium`";v=`"99`", `"Microsoft Edge`";v=`"99`""
+		"sec-ch-ua-mobile"="?0"
+		"sec-ch-ua-platform"="`"Windows`""
+		"dnt"="1"
+		"upgrade-insecure-requests"="1"
+		"accept"="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+		"sec-fetch-site"="none"
+		"sec-fetch-mode"="navigate"
+		"sec-fetch-user"="?1"
+		"sec-fetch-dest"="document"
+		"accept-encoding"="gzip, deflate, br"
+		"accept-language"="en-US,en;q=0.9"
+	}
+} catch {
+    Throw "Failed to connect: $url with error $_."
+    exit
+} finally {
+	$dcuuri = $response.links | Where-Object {$_.outerHTML -like "*Dell-Command-Update-Windows*"}
+	Invoke-WebRequest -UseBasicParsing -Uri $dcuuri.href -OutFile $dcu -WebSession $session -Headers @{
+		"method"="GET"
+		"authority"="dl.dell.com"
+		"scheme"="https"
+		"path"="/FOLDER08334704M/2/Dell-Command-Update-Windows-Universal-Application_601KT_WIN_4.5.0_A00_01.EXE?uid=365d6f18-f6f7-485e-32b2-3970ae18d9af&fn=Dell-Command-Update-Windows-Universal-Application_601KT_WIN_4.5.0_A00_01.EXE"
+		"sec-ch-ua"="`" Not A;Brand`";v=`"99`", `"Chromium`";v=`"99`", `"Microsoft Edge`";v=`"99`""
+		"sec-ch-ua-mobile"="?0"
+		"sec-ch-ua-platform"="`"Windows`""
+		"upgrade-insecure-requests"="1"
+		"dnt"="1"
+		"accept"="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+		"sec-fetch-site"="same-site"
+		"sec-fetch-mode"="navigate"
+		"sec-fetch-user"="?1"
+		"sec-fetch-dest"="document"
+		"referer"="https://www.dell.com/support/home/en-us/drivers/DriversDetails?driverId=601KT"
+		"accept-encoding"="gzip, deflate, br"
+		"accept-language"="en-US,en;q=0.9"
+	}
+}
+
+Start-Process -FilePath $dcu -ArgumentList "/s /l=$path\dcu-inst-log.txt" -Wait -NoNewWindow -passthru
+
+Stop-Transcript
