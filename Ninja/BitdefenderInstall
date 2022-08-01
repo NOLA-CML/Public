@@ -1,0 +1,24 @@
+Write-host "Setting variables"
+
+$path = "$env:TEMP"
+
+Start-Transcript -Path "$path\bitdefender.log"
+
+$company = $env:NINJA_ORGANIZATION_NAME
+$url = "https://download.bitdefender.com/SMB/Hydra/release/bst_win/downloaderWrapper/BEST_downloaderWrapper.msi"
+$file = "$path\bitdefender.msi" 
+$string = Ninja-Property-Docs-Get -TemplateId "Software" -DocumentName "Bitdefender" -AttributeName orgKey
+
+
+
+Write-host "Downloading installer for $company from $url and saving at $file"
+try {
+  Invoke-WebRequest -Uri $url -OutFile $file
+} catch {
+  Write-Host $_.exception.Message
+}
+
+write-host "Installing $file with string $string"
+msiexec /i $file /qn GZ_PACKAGE_ID=$string REBOOT_IF_NEEDED=1 /L*V "$path\bitdefender.msi.log"
+
+Stop-Transcript
