@@ -1,0 +1,24 @@
+Write-host "Setting variables"
+$path = "$env:TEMP"
+
+Start-Transcript -Path "$path\screenconnect.log"
+
+$company = [uri]::EscapeDataString($env:NINJA_ORGANIZATION_NAME)
+$url = "!!!ENTER YOUR DOWNLOAD URL HERE!!!"
+$file = "$path\connect.msi" 
+
+Write-host "Downloading installer for $company from $url and saving at $file"
+try {
+  Invoke-WebRequest -Uri $url -OutFile $file
+} catch {
+  Write-Host $_.exception.Message
+}
+
+write-host "Installing $file with msiexec"
+try {
+  msiexec /i $file /qn
+} catch {
+  Write-Host $_.exception.Message
+}
+
+Stop-Transcript
