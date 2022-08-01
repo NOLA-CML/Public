@@ -1,0 +1,77 @@
+#Set parameters
+$path = "$env:TEMP\office"
+$odtsetup = "$path\officedeploymenttool.exe"
+$odt = "$path\setup.exe"
+$xmlpath = "$path\configuration.xml"
+$log = "$path\odt.log"
+New-Item -Path $path -ItemType directory
+Start-Transcript $log
+
+$software = "Microsoft 365"
+$installed = (Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -like "*$software*" }) -ne $null
+
+If(-Not $installed) {
+	Write-Host "$software is NOT installed...installing";
+} else {
+	Copy-Item "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Excel.lnk" "C:\Users\Public\Desktop\"
+  Copy-Item "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Outlook.lnk" "C:\Users\Public\Desktop\"
+  Copy-Item "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Word.lnk" "C:\Users\Public\Desktop\"
+	Throw "$software is already installed."
+	exit
+}
+
+#Download Office Deployment tool
+$url = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=49117"
+try {
+    $response = Invoke-WebRequest -UseBasicParsing -Uri $url -ErrorAction SilentlyContinue
+} catch {
+    Throw "Failed to connect to ODT: $url with error $_."
+    Break
+} finally {
+    $ODTUri = $response.links | Where-Object {$_.outerHTML -like "*click here to download manually*"}
+    Invoke-WebRequest -UseBasicParsing -Uri $ODTUri.href -OutFile $odtsetup
+}
+
+#Create xml
+$xml= @'
+  <Configuration ID="7962839d-c897-4b63-8068-7b2003934f04">
+    <Add OfficeClientEdition="64" Channel="Current">
+      <Product ID="O365ProPlusRetail">
+        <Language ID="en-us" />
+        <ExcludeApp ID="Groove" />
+        <ExcludeApp ID="Lync" />
+        <ExcludeApp ID="Bing" />
+      </Product>
+    </Add>
+    <Property Name="SharedComputerLicensing" Value="0" />
+    <Property Name="SCLCacheOverride" Value="0" />
+    <Property Name="AUTOACTIVATE" Value="0" />
+    <Property Name="FORCEAPPSHUTDOWN" Value="FALSE" />
+    <Property Name="DeviceBasedLicensing" Value="0" />
+    <Updates Enabled="TRUE" />
+    <RemoveMSI />
+    <AppSettings>
+      <User Key="software\microsoft\office\16.0\common\general" Name="shownfirstrunoptin" Value="1" Type="REG_DWORD" App="office16" Id="L_DisableOptinWizard" />
+      <User Key="software\microsoft\office\16.0\common" Name="qmenable" Value="0" Type="REG_DWORD" App="office16" Id="L_EnableCustomerExperienceImprovementProgram" />
+      <User Key="software\microsoft\office\16.0\osm" Name="enablelogging" Value="0" Type="REG_DWORD" App="office16" Id="L_EnableLogging" />
+      <User Key="software\microsoft\office\16.0\firstrun" Name="disablemovie" Value="1" Type="REG_DWORD" App="office16" Id="L_DisableMovie" />
+      <User Key="software\microsoft\office\16.0\firstrun" Name="bootedrtm" Value="1" Type="REG_DWORD" App="office16" Id="L_DisableOfficeFirstrun" />
+    </AppSettings>
+    <Display Level="None" AcceptEULA="TRUE" />
+  </Configuration>
+'@
+
+$xml | Out-File $xmlpath
+
+#extract setup.exe from odt
+Start-Process -Filepath $odtsetup -ArgumentList "/quiet /extract:$path" -Wait -NoNewWindow
+
+#run setup with xml
+Start-Process -Filepath $odt -ArgumentList "/configure $xmlpath" -Wait -NoNewWindow
+
+#add shortcuts to dekstop
+Copy-Item "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Excel.lnk" "C:\Users\Public\Desktop\"
+Copy-Item "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Outlook.lnk" "C:\Users\Public\Desktop\"
+Copy-Item "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Word.lnk" "C:\Users\Public\Desktop\"
+
+Stop-Transcript
